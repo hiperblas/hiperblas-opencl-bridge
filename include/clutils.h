@@ -59,6 +59,7 @@ typedef struct __cl_info {
     cl_uint           n;   // n compute units
     cl_device_id      d;   // current device
     cl_uint           fp64;                    
+    cl_ulong          mem_size;                    
 } cl_info;
 
 cl_device_type proctype;

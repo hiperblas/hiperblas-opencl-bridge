@@ -323,7 +323,14 @@ cl_info GetCLInfo( char * filename ) {
         fprintf (stderr, "Program Build Log:\n%s\n", buildLog);
         status = CL_BUILD_PROGRAM_FAILURE;
     }
+    cl_ulong globalMemorySize;
+    clGetDeviceInfo(currentDevice, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &globalMemorySize, NULL);
+
+    printf("global memory size: %ld \n", globalMemorySize );
+
+    clGetDeviceInfo(currentDevice, CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(cl_ulong), &globalMemorySize, NULL);
     
+    printf("memory size: %ld sizeof(double)=%ld\n", globalMemorySize, sizeof(double) );
     CLERR
     cl_info info;
     info.c = context;
@@ -331,6 +338,7 @@ cl_info GetCLInfo( char * filename ) {
     info.q = commandQueue;
     info.n = num_compute_units;
     info.d = currentDevice;
+    info.mem_size = globalMemorySize;
     if( (fp_config & CL_FP_FMA) | (fp_config & CL_FP_ROUND_TO_NEAREST) | (fp_config & CL_FP_ROUND_TO_ZERO) | (fp_config & CL_FP_ROUND_TO_INF) | (fp_config & CL_FP_INF_NAN) | (fp_config & CL_FP_DENORM) ) 
         info.fp64 = 1;
     else

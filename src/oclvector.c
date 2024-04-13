@@ -19,6 +19,9 @@ void StopEngine(){
     ReleaseCLInfo(clinfo);
 }
 
+long get_Engine_Max_Memory_Allocation(){
+    return clinfo.mem_size;
+}
 
 double * addVector( double * v1, double * v2, int n ) {
     cl_int status;
@@ -481,7 +484,7 @@ cl_mem matMul(  cl_mem m1Dev, cl_mem m2Dev, int nrows, int ncols, int qq, int at
     cl_int status;
     cl_mem outDev;
     cl_kernel kernel;
-    int ss;
+    long ss;
     if( atype == T_FLOAT && btype == T_FLOAT) {
         kernel = clkernels[KERMATMUL];
         ss = nrows*ncols*sizeof(double);
@@ -494,9 +497,10 @@ cl_mem matMul(  cl_mem m1Dev, cl_mem m2Dev, int nrows, int ncols, int qq, int at
     }
         
     size_t globalWorkSize [] = { nrows, ncols };
-    
+    // printf("allocating result ss=%ld\n",ss);
     outDev = clCreateBuffer (clinfo.c, CL_MEM_WRITE_ONLY, ss, NULL, &status);
     CLERR    
+    // printf("allocated result\n");
     status = clSetKernelArg (kernel, 0, sizeof(outDev), &outDev);
     CLERR
     status = clSetKernelArg (kernel, 1, sizeof(m1Dev), &m1Dev);
@@ -512,33 +516,33 @@ cl_mem matMul(  cl_mem m1Dev, cl_mem m2Dev, int nrows, int ncols, int qq, int at
     return outDev;
 }
 
-cl_mem matMul2(  cl_mem m1Dev, cl_mem m2Dev, int nrows, int ncols, int qq ) {
-    cl_int status;
-    cl_mem outDev;
-    cl_kernel kernel = clkernels[KERMATMUL2];
-    size_t globalSize[2];
-    size_t localSize[2];   
-    localSize[0] = BLOCK_DIM;
-    localSize[1] = BLOCK_DIM;
-    globalSize[0] = roundUp(nrows, BLOCK_DIM);
-    globalSize[1] = roundUp(ncols, BLOCK_DIM);
+// cl_mem matMul2(  cl_mem m1Dev, cl_mem m2Dev, int nrows, int ncols, int qq ) {
+//     cl_int status;
+//     cl_mem outDev;
+//     cl_kernel kernel = clkernels[KERMATMUL2];
+//     size_t globalSize[2];
+//     size_t localSize[2];   
+//     localSize[0] = BLOCK_DIM;
+//     localSize[1] = BLOCK_DIM;
+//     globalSize[0] = roundUp(nrows, BLOCK_DIM);
+//     globalSize[1] = roundUp(ncols, BLOCK_DIM);
     
-    outDev = clCreateBuffer (clinfo.c, CL_MEM_WRITE_ONLY, nrows*ncols*sizeof(double), NULL, &status);
-    CLERR    
-    status = clSetKernelArg (kernel, 0, sizeof(outDev), &outDev);
-    CLERR
-    status = clSetKernelArg (kernel, 1, sizeof(m1Dev), &m1Dev);
-    CLERR
-    status = clSetKernelArg (kernel, 2, sizeof(m2Dev), &m2Dev);
-    CLERR
-    status = clSetKernelArg (kernel, 3, sizeof(int), (void *)&qq);
-    CLERR
-    status = clEnqueueNDRangeKernel(clinfo.q, kernel, 2, NULL, globalSize, localSize, 0, NULL, NULL);
-    CLERR
-    status = clFinish(clinfo.q);
-    CLERR
-    return outDev;
-}
+//     outDev = clCreateBuffer (clinfo.c, CL_MEM_WRITE_ONLY, nrows*ncols*sizeof(double), NULL, &status);
+//     CLERR    
+//     status = clSetKernelArg (kernel, 0, sizeof(outDev), &outDev);
+//     CLERR
+//     status = clSetKernelArg (kernel, 1, sizeof(m1Dev), &m1Dev);
+//     CLERR
+//     status = clSetKernelArg (kernel, 2, sizeof(m2Dev), &m2Dev);
+//     CLERR
+//     status = clSetKernelArg (kernel, 3, sizeof(int), (void *)&qq);
+//     CLERR
+//     status = clEnqueueNDRangeKernel(clinfo.q, kernel, 2, NULL, globalSize, localSize, 0, NULL, NULL);
+//     CLERR
+//     status = clFinish(clinfo.q);
+//     CLERR
+//     return outDev;
+// }
 
 void matSquare( cl_mem * outLin, cl_mem * idxOutLin, 
                 cl_mem * outCol, cl_mem * idxOutCol, 
