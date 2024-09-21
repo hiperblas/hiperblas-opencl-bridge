@@ -383,7 +383,7 @@ matMul2(              __global       real * Result,
 __kernel void sparseMatMulVec(  __global real * vec_out, 
                                 __global real * m,  
                                 __global int * col_idx,
-                                __constant real * vec_in, 
+                                __global real * vec_in, 
                                 const int nrows, 
                                 const int maxcols ) {
     const int idx = get_global_id(0);

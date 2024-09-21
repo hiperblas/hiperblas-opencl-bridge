@@ -87,7 +87,7 @@ void matreqdev ( matrix_t * v ) {
         matrix_t * m = (matrix_t *) vvalue( *in[0] );
         int len = ( m->type == T_COMPLEX ) ? (2 * m->ncol * m->nrow) : (m->ncol * m->nrow);
         if( m->location == LOCDEV )
-            return (void **) NULL;
+            return;
         m->location = LOCDEV;
         cl_mem_flags flags;
         if (m->value.f != NULL) {

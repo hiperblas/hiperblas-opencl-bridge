@@ -72,6 +72,19 @@ void luDecomp( cl_mem ADev, int n ) {
     status = clFinish(clinfo.q);
 }
 
+double * copyVectorFromDevice(cl_mem vec, int n ) {
+    
+    double * out = (double *) malloc( n );
+
+    cl_int status;
+
+    status = clEnqueueReadBuffer (clinfo.q, vec, CL_TRUE, 0, n, out, 0, NULL, NULL);
+
+    CLERR
+
+    return out;
+}
+
 cl_mem addVectorF(cl_mem v1Dev, cl_mem v2Dev, int n ) {
     
     cl_int status;
@@ -613,11 +626,11 @@ cl_mem matVecMul3(  cl_mem mDev, cl_mem vDev, int ncols, int nrows ) {
     size_t globalWorkSize = 2 * clinfo.n * localWorkSize;   
     outDev = clCreateBuffer(clinfo.c, CL_MEM_WRITE_ONLY, nrows*sizeof(double), NULL, &status);
     CLERR   
-    status = clSetKernelArg (kernel, 0, sizeof(outDev), &outDev);
+    status = clSetKernelArg (kernel, 0, sizeof(cl_mem), &outDev);
     CLERR
-    status = clSetKernelArg (kernel, 1, sizeof(mDev), &mDev);
+    status = clSetKernelArg (kernel, 1, sizeof(cl_mem), &mDev);
     CLERR
-    status = clSetKernelArg (kernel, 2, sizeof(vDev), &vDev);
+    status = clSetKernelArg (kernel, 2, sizeof(cl_mem), &vDev);
     CLERR
     status = clSetKernelArg (kernel, 3, sizeof(int), (void *)&ncols);
     CLERR
@@ -639,13 +652,13 @@ cl_mem sparseVecMul(cl_mem mDev, cl_mem idxCol, cl_mem vDev, int nrows, int maxC
     size_t globalWorkSize = nrows;   
     outDev = clCreateBuffer(clinfo.c, CL_MEM_WRITE_ONLY, nrows*sizeof(double), NULL, &status);
     CLERR   
-    status = clSetKernelArg (kernel, 0, sizeof(outDev), &outDev);
+    status = clSetKernelArg (kernel, 0, sizeof(cl_mem), &outDev);
     CLERR
-    status = clSetKernelArg (kernel, 1, sizeof(mDev), &mDev);
+    status = clSetKernelArg (kernel, 1, sizeof(cl_mem), &mDev);
     CLERR
-    status = clSetKernelArg (kernel, 2, sizeof(idxCol), &idxCol);    
+    status = clSetKernelArg (kernel, 2, sizeof(cl_mem), &idxCol);    
     CLERR
-    status = clSetKernelArg (kernel, 3, sizeof(vDev), &vDev);
+    status = clSetKernelArg (kernel, 3, sizeof(cl_mem), &vDev);
     CLERR  
     status = clSetKernelArg (kernel, 4, sizeof(int), (void *)&nrows);
     CLERR
@@ -665,13 +678,13 @@ cl_mem sparseComplexVecMul(cl_mem mDev, cl_mem idxCol, cl_mem vDev, int nrows, i
     size_t globalWorkSize = nrows;   
     outDev = clCreateBuffer(clinfo.c, CL_MEM_WRITE_ONLY, 2*nrows*sizeof(double), NULL, &status);
     CLERR   
-    status = clSetKernelArg (kernel, 0, sizeof(outDev), &outDev);
+    status = clSetKernelArg (kernel, 0, sizeof(cl_mem), &outDev);
     CLERR
-    status = clSetKernelArg (kernel, 1, sizeof(mDev), &mDev);
+    status = clSetKernelArg (kernel, 1, sizeof(cl_mem), &mDev);
     CLERR
-    status = clSetKernelArg (kernel, 2, sizeof(idxCol), &idxCol);    
+    status = clSetKernelArg (kernel, 2, sizeof(cl_mem), &idxCol);    
     CLERR
-    status = clSetKernelArg (kernel, 3, sizeof(vDev), &vDev);
+    status = clSetKernelArg (kernel, 3, sizeof(cl_mem), &vDev);
     CLERR  
     status = clSetKernelArg (kernel, 4, sizeof(int), (void *)&nrows);
     CLERR

@@ -307,14 +307,16 @@ cl_info GetCLInfo( char * filename ) {
     context = clCreateContext (contextProperties, 1, &currentDevice, NULL, NULL, &status);
     CLERR
     cl_command_queue commandQueue;  
-    commandQueue = clCreateCommandQueue (context, currentDevice, 0, &status);
+    // commandQueue = clCreateCommandQueue (context, currentDevice, 0, &status);
+    cl_command_queue_properties properties[] = {CL_QUEUE_PROPERTIES, CL_QUEUE_PROFILING_ENABLE, 0};
+    commandQueue = clCreateCommandQueueWithProperties(context, currentDevice, properties, &status);
     CLERR
     const char * source  = filetobuf( filename );
     int i;
     cl_program program = clCreateProgramWithSource (context, 1, &source, NULL, &status);
     CLERR
     free( source );
-    const char options[] = "-Werror -cl-std=CL1.1";
+    const char options[] = "-Werror -cl-std=CL3.0";
     status = clBuildProgram (program, 1, &currentDevice, options, NULL, NULL);
     if (status == CL_BUILD_PROGRAM_FAILURE) {
         char buildLog[1024];
@@ -326,11 +328,11 @@ cl_info GetCLInfo( char * filename ) {
     cl_ulong globalMemorySize;
     clGetDeviceInfo(currentDevice, CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(cl_ulong), &globalMemorySize, NULL);
 
-    printf("global memory size: %ld \n", globalMemorySize );
+    // printf("global memory size: %ld \n", globalMemorySize );
 
     clGetDeviceInfo(currentDevice, CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(cl_ulong), &globalMemorySize, NULL);
     
-    printf("memory size: %ld sizeof(double)=%ld\n", globalMemorySize, sizeof(double) );
+    // printf("memory size: %ld sizeof(double)=%ld\n", globalMemorySize, sizeof(double) );
     CLERR
     cl_info info;
     info.c = context;

@@ -96,7 +96,7 @@ void vecreqdev ( vector_t * v ) {
         vector_t * v = (vector_t *) vvalue( *in[0] );
         int len = (v->type == T_COMPLEX) ? (2*v->len) : (v->len);
         if( v->location == LOCDEV )
-            return (void **) NULL;
+            return;
         v->location = LOCDEV;
         cl_mem_flags flags;
         if (v->value.f != NULL) {
