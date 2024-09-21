@@ -318,7 +318,7 @@ void smatreqdev ( smatrix_t * v ) {
         size_t size_type = (clinfo.fp64) ? sizeof(double) : sizeof(float);
         smatrix_t * m = (smatrix_t *) vvalue( *in[0] );
         if( m->location == LOCDEV )
-            return (void **) NULL;
+            return;
         int len = ( m->type == T_COMPLEX ) ? (2 * m->maxcols * m->nrow) : (m->maxcols * m->nrow);
         m->location = LOCDEV;
         cl_mem_flags flags;
